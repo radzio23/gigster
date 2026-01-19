@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="pl">
+<head>
+  <meta charset="utf-8">
+  <title>Gigster</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <link rel="icon" href="{{ url_for('static', filename='images/logo.png') }}">
+</head>
+<body data-role="{{session.get('role')}}">
+  <div class="menu">
+    <a href="{{ url_for('index') }}">Gigster</a>
+    <div class="nav">
+      <a href="{{ url_for('concerts') }}">Koncerty</a>
+      <span>|</span>
+      <a href="{{ url_for('artists') }}">Artyści</a>
+      <span>|</span>
+      <a href="{{ url_for('venues') }}">Miejsca</a>
+    </div>
+    <div class="user-menu">
+      {% if session.get('logged_in') %}
+        <span>{{ session.get('username') | upper }}</span>
+      {% else %}
+        <img src="{{ url_for('static', filename='images/menu.png') }}" alt="menu">
+      {% endif %}
+      <img src="{{ url_for('static', filename='images/user.png') }}" alt="user">
+      <div class="user-dropdown">
+        <div>
+          {% if session.get('logged_in') %}
+            {% if session.get('role') == 'admin' %}
+              <a href="{{ url_for('dashboard') }}">Panel administratora</a>
+            {% elif session.get('role') == 'user' %}
+              <a href="{{ url_for('tickets') }}">Moje bilety</a>
+            {% endif %}
+            <a href="{{ url_for('logout') }}">Wyloguj się</a>
+          {% else %}
+            <a href="{{ url_for('login') }}">Zaloguj się</a>
+            <a href="{{ url_for('register') }}">Zarejestruj się</a>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <div class="messages">
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        <div class="alert">
+          {% for msg in messages %}
+            <span>{{ msg }}</span>
+          {% endfor %}
+          <button onclick="this.parentElement.style.display='none'">&times;</button>
+        </div>
+      {% endif %}
+    {% endwith %}
+  </div>
+
+  <div id="confirmModal" class="modal">
+    <div class="modal-content">
+        <div class="confirm-icon">⚠︎</div>
+        <h3>Czy jesteś pewien?</h3>
+        <p id="confirmMessage">Tej operacji nie da się cofnąć.</p>
+        <div class="confirm-buttons">
+            <button id="confirmYes" class="btn-danger">Tak, usuń</button>
+            <button id="confirmNo" class="cancel-btn" onclick="closeConfirm()">Anuluj</button>
+        </div>
+    </div>
+  </div>
+
+  <div id="viewModal" class="modal" onclick="closeView(event)">
+    <div class="modal-content view-content">
+      <div id="viewDetails" class="view-details"></div>
+    </div>
+  </div>
+
+  <main>
+    {% block content %}{% endblock %}
+  </main>
+  <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>

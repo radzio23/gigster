@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container">
+    <div class="order-content">
+        <div>
+            <h1 style="margin: 0 0 10px 0; text-align: center;">ZAMÓWIENIE</h1>
+            <div class="img-container">
+                <div class="blur-bg" style="background-image: url('/static/images/koncerty/{{concert.zdjecie}}');"></div>
+                <img src="/static/images/koncerty/{{concert.zdjecie}}" alt="Zdjęcie koncertu">
+            </div>
+        </div>
+        <div class="view-info">
+            <h1>{{concert.opis}}</h1>
+            <h2>{{concert.artysta}}</h2>
+            <hr>
+            <div>
+                <div class="info-block">
+                    <div><span class="emoji">◴</span> {{concert.data}}, {{concert.czas}}</div>
+                    <div><span class="emoji">⚲</span> {{concert.miejsce}}</div>
+                    <div><span class="emoji">$</span> <span id="unitPrice">{{concert.cena_biletu}}</span> zł</div>
+                </div> 
+            </div>
+            <form id="purchaseForm">
+                <input type="hidden" name="id_koncertu" value="{{ concert.id }}">
+                <div>
+                    <span>Liczba biletów:</span>
+                    <input type="number" name="ilosc" id="ticketQuantity" value="1" min="1" oninput="updateTotal()" style="width: 100px;">
+                </div>
+                
+                <div class="total-price">
+                    <h3>Do zapłaty: <span id="totalPrice">{{ concert.cena_biletu }}</span> zł</h3>
+                </div>
+
+                <button type="button" class="buy-ticket-btn" onclick="confirmPurchase()">Finalizuj zakup</button>
+                <a href="{{ url_for('concerts') }}" style="color: #00afaf;">Wróć</a>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,21 @@
+Python 3.12.9
+PostgreSQL 18.1
+
+1. Tworzymy virtual environment:
+
+python -m venv venv
+.\venv\Scripts\activate
+
+2. Instalujemy wymagane biblioteki:
+
+pip install Flask psycopg Werkzeug
+
+4. Uruchamiamy aplikację:
+python app.py
+
+Dane do połączenia z bazą danych PostgreSQL:
+    Host: localhost
+    Port: 5432
+    Nazwa bazy danych: gigster_db
+    Użytkownik: postgres
+    Hasło: postgres

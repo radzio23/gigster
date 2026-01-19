@@ -1,0 +1,114 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="header">
+    <h1>KONCERTY</h1>
+    <form action="/koncerty" method="GET" class="filter">
+        <h3>☰ Filtry</h3>
+        <div>
+            <select name="artysta">
+                <option value="">Artysta...</option>
+                {% for a in artists %}
+                    <option value="{{ a.id }}" {% if request.args.get('artysta') == a.id|string %}selected{% endif %}>{{ a.nazwa }}</option>
+                {% endfor %}
+            </select>
+            <select name="miejsce">
+                <option value="">Miejsce...</option>
+                {% for v in venues %}
+                    <option value="{{ v.id }}" {% if request.args.get('miejsce') == v.id|string %}selected{% endif %}>{{ v.nazwa }}</option>
+                {% endfor %}
+            </select>
+            <button type="submit" class="btn-add">✔</button>
+            <a href="/koncerty" class="cancel-btn">✖</a>
+        </div>
+    </form>
+    {% if session.get('role') == 'admin' %}
+    <button class="btn-add" onclick="openAddModal('koncerty')">+ Dodaj koncert</button>
+
+    <div id="modal" class="modal">
+        <div class="modal-content">
+            <h2>Nowy koncert</h2>
+            <form id="addForm" novalidate>
+                <input type="hidden" id="id" name="id">
+                <label>Nazwa:</label>
+                <input type="text" name="opis" placeholder="Nazwa koncertu..." required>
+                
+                <label>Artysta:</label>
+                <select name="id_artysty" required>
+                    <option value="" selected disabled hidden>Wybierz artystę...</option>
+                    {% for a in artists %}
+                        <option value="{{ a.id }}">{{ a.nazwa }}</option>
+                    {% endfor %}
+                </select>
+
+                <label>Miejsce:</label>
+                <select name="id_miejsca" required>
+                    <option value="" selected disabled hidden>Wybierz miejsce...</option>
+                    {% for v in venues %}
+                        <option value="{{ v.id }}">{{ v.nazwa }}</option>
+                    {% endfor %}
+                </select>
+
+                <label>Cena biletu:</label>
+                <input type="number" name="cena_biletu" step="0.01" min="0" placeholder="Cena biletu..." required>
+
+                <div class="date">
+                    <div>
+                        <label>Data:</label>
+                        <input type="date" name="data" required>
+                    </div>
+                    <div>
+                        <label>Czas:</label>
+                        <input type="time" name="czas" required>
+                    </div>
+                </div>
+
+                <label>Zdjęcie:</label>
+                <div class="file">
+                    <input type="file" name="file" id="fileInput">
+                    <label class="cancel-btn" for="fileInput">🗀 Wybierz plik</label>
+                    <img id="img-preview" src="" alt="Podgląd">
+                </div>
+
+                <div class="modal-controls">
+                    <button type="submit" class="save-btn">Zapisz</button>
+                    <button type="button" onclick="closeModal()" class="cancel-btn">Anuluj</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+{% if concerts|length == 0 %}
+    <h2 style="margin: 20px;">Brak koncertów do wyświetlenia.</h2>
+{% endif %}
+<div class="container concerts">
+    {% for row in concerts %}
+    <div class="card" id="card-{{ row.id }}" onclick="openViewModal('{{ row.id }}')">
+        {% set default_img = url_for('static', filename='images/koncerty/default.png') %}
+        {% set tyg = {'Mon': 'Pon', 'Tue': 'Wt', 'Wed': 'Śr', 'Thu': 'Czw', 'Fri': 'Pt', 'Sat': 'So', 'Sun': 'Nd'} %}
+        
+        <img src="{{ url_for('static', filename='images/koncerty/' + row.zdjecie) }}" 
+             alt="{{ row.opis }}" 
+             onerror="this.src = '{{ default_img }}'">
+             
+        <div class="card-content">
+            <h2>{{ row.opis }} | {{ row.artysta }}</h2>
+            <div>
+                <div>
+                    <p>{{ tyg[row.data.strftime("%a")] }}, {{ row.data.strftime("%d.%m.%Y") }}</p>
+                    <p>{{ row.miasto }}</p>
+                </div>
+                {% if session.get('role') == 'admin' %}
+                <div class="controls">
+                    <button class="btn-edit" onclick="event.stopPropagation(); openEditModal('koncerty', '{{ row.id }}')">✎</button>
+                    <button class="btn-delete" onclick="event.stopPropagation(); deleteItem('koncerty', '{{ row.id }}')">✖</button>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

@@ -1,0 +1,106 @@
+{% extends "base.html" %}
+{% block content %}
+<div id="modal" class="modal">
+    <div class="modal-content">
+        <h2>Nowy koncert</h2>
+        <form id="addForm" novalidate>
+            <input type="hidden" id="id" name="id">
+            
+            <label>Nazwa użytkownika:</label>
+            <input type="text" id="nazwa" name="nazwa" required placeholder="Wpisz nazwę...">
+            
+            <label>Hasło (zostaw puste, aby nie zmieniać):</label>
+            <input type="password" id="haslo" name="haslo" placeholder="Wpisz nowe hasło...">
+            
+            <label>Rola:</label>
+            <select id="rola" name="rola">
+                <option value="user">USER</option>
+                <option value="admin">ADMIN</option>
+            </select>
+
+            <div class="modal-controls">
+                <button type="submit" class="save-btn">Zapisz</button>
+                <button type="button" onclick="closeModal()" class="cancel-btn">Anuluj</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="container">
+    <div class="report-tabs">
+        <button class="tab-btn active" onclick="showReport('users')">👥 Użytkownicy</button>
+        <button class="tab-btn" onclick="showReport('occupancy')">🎶 Koncerty</button>
+        <button class="tab-btn" onclick="showReport('artists')">🎤 Artyści</button>
+        <button class="tab-btn" onclick="showReport('cities')">🌃 Miasta</button>
+        <button class="tab-btn" onclick="showReport('income')">💰 Sprzedaż</button>
+    </div>
+</div>
+
+<div id="users" class="report-content" style="display: block;">
+    <table class="report-table users">
+        <tr><th colspan="3">Zarządzanie Użytkownikami</th></tr>
+        {% for u in uzytkownicy %}
+            <tr>
+                <td style="width: 40px;"><strong style="color: #ffdd1c;">{% if u.rola == 'admin' %} 🜲 {%endif%}</strong></td>
+                <td>{{ u.nazwa }}</td>
+                <td>
+                    <div class="controls" style="justify-content: flex-end;">
+                        <button class="btn-edit" onclick="event.stopPropagation(); openEditModal('uzytkownicy', '{{ u.id }}')">✎</button>
+                        {% if u.id != session.user_id %}
+                            <button class="btn-delete" onclick="event.stopPropagation(); deleteItem('uzytkownicy', '{{ u.id }}')">✖</button>
+                        {% endif %}
+                    </div>
+                </td>
+            </tr>
+        {% endfor %}
+    </table>
+</div>
+
+<div id="occupancy" class="report-content" style="display: none;">
+    <h2>Analiza frekwencji na poszczególnych wydarzeniach.</h2>
+    <table class="report-table">
+        <thead><tr><th>Koncert</th><th>Artysta</th><th>Miejsce</th><th>Zajęte miejsca</th><th>%</th></tr></thead>
+        <tbody>
+            {% for o in oblozenie %}
+            <tr><td>{{ o.koncert }}</td><td>{{ o.artysta }}</td><td>{{ o.miejsce }}</td><td>{{ o.zajete_miejsca }}/{{ o.pojemnosc }}</td><td>{{ o.procent }}%</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<div id="artists" class="report-content" style="display: none;">
+    <h2>Wyniki sprzedażowe konkretnych wykonawców.</h2>
+    <table class="report-table">
+        <thead><tr><th>Artysta</th><th>Sprzedane bilety</th><th>Przychód</th></tr></thead>
+        <tbody>
+            {% for a in artysci %}
+            <tr><td><strong>{{ a.artysta }}</strong></td><td>{{ a.liczba_biletow }} szt.</td><td style="color: #28a745; font-weight: bold;">{{ a.kwota }} zł</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<div id="income" class="report-content" style="display: none;">
+    <h2>Trendy czasowe w sprzedaży biletów</h2>
+    <table class="report-table">
+        <thead><tr><th>Okres (Miesiąc)</th><th>Sprzedane bilety</th><th>Całkowity przychód</th></tr></thead>
+        <tbody>
+            {% for s in sprzedaz %}
+            <tr><td>{{ s.miesiac }}</td><td>{{ s.liczba_biletow }} szt.</td><td style="color: #28a745; font-weight: bold;">{{ s.przychod }} zł</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<div id="cities" class="report-content" style="display: none;">
+    <h2>Analiza danych pod kątem geograficznym</h2>
+    <table class="report-table">
+        <thead><tr><th>Miasto</th><th>Sprzedane bilety</th><th>Średnia cena</th><th>Łączny przychód</th></tr></thead>
+        <tbody>
+            {% for m in miasta %}
+            <tr><td><strong>{{ m.miasto }}</strong></td><td>{{ m.liczba_sprzedanych_biletow }} szt.</td><td>{{ m.srednia_cena_biletu }} zł</td><td style="color: #28a745; font-weight: bold;">{{ m.laczny_przychod }} zł</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

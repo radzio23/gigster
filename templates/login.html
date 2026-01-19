@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="form-wrapper">
+  <h2 class="title">Logowanie</h2>
+  <form method="post" action="{{ url_for('login') }}">
+    <label>Nazwa użytkownika <input name="username" required></label>
+    <label>Hasło <input name="password" type="password" required></label>
+    <button type="submit">Zaloguj</button>
+  </form>
+  <p>Nie masz konta? <a href="{{ url_for('register') }}">Zarejestruj się</a></p>
+</div>
+{% endblock %}

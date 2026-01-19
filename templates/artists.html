@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="header">
+    <h1>ARTYŚCI</h1>
+    {% if session.get('role') == 'admin' %}
+    <button class="btn-add" onclick="openAddModal('artysci')">+ Dodaj artystę</button>
+
+    <div id="modal" class="modal">
+        <div class="modal-content">
+            <h2>Nowy artysta</h2>
+            <form id="addForm" novalidate>
+                <input type="hidden" id="id" name="id">
+
+                <label>Gatunek:</label>
+                <select name="id_gatunku" required>
+                    <option value="" selected disabled hidden>Wybierz gatunek...</option>
+                    {% for g in genres %}
+                        <option value="{{ g.id }}">{{ g.nazwa }}</option>
+                    {% endfor %}
+                </select>
+
+                <label>Nazwa:</label>
+                <input type="text" name="nazwa" placeholder="Nazwa artysty..." required>
+
+                <label>Zdjęcie:</label>
+                <div class="file">
+                    <input type="file" name="file" id="fileInput">
+                    <label class="cancel-btn" for="fileInput">🗀 Wybierz plik</label>
+                    <img id="img-preview" src="" alt="Podgląd">
+                </div>
+
+                <div class="modal-controls">
+                    <button type="submit" class="save-btn">Zapisz</button>
+                    <button type="button" onclick="closeModal()" class="cancel-btn">Anuluj</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+<div class="container artists">
+    {% for row in artists %}
+    <div class="card" id="card-{{ row.id }}" onclick="window.location.href='/koncerty?artysta={{ row.id }}'">
+        {% set default_img = url_for('static', filename='images/artysci/default.png') %}
+        
+        <img src="{{ url_for('static', filename='images/artysci/' + row.zdjecie) }}" 
+             alt="{{ row.nazwa }}" 
+             onerror="this.src = '{{ default_img }}'">
+             
+        <div class="card-content">
+            <h2>{{ row.nazwa }}</h2>
+            <div>
+                <div></div>
+                {% if session.get('role') == 'admin' %}
+                <div class="controls">
+                    <button class="btn-edit" onclick="event.stopPropagation(); openEditModal('artysci', '{{ row.id }}')">✎</button>
+                    <button class="btn-delete" onclick="event.stopPropagation(); deleteItem('artysci', '{{ row.id }}')">✖</button>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

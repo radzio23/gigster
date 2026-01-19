@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="header">
+    <h1>MIEJSCA</h1>
+    {% if session.get('role') == 'admin' %}
+    <button class="btn-add" onclick="openAddModal('miejsca')">+ Dodaj miejsce</button>
+
+    <div id="modal" class="modal">
+        <div class="modal-content">
+            <h2>Nowe miejsce</h2>
+            <form id="addForm" novalidate>
+                <input type="hidden" id="id" name="id">
+
+                <label>Nazwa:</label>
+                <input type="text" name="nazwa" placeholder="Nazwa miejsca..." required>
+
+                <label>Miasto:</label>
+                <input type="text" name="miasto" placeholder="Miasto..." required>
+
+                <label>Adres:</label>
+                <input type="text" name="adres" placeholder="Adres..." required>
+
+                <label>Pojemność:</label>
+                <input type="number" name="pojemnosc" placeholder="Pojemność..." required>
+
+                <label>Zdjęcie:</label>
+                <div class="file">
+                    <input type="file" name="file" id="fileInput">
+                    <label class="cancel-btn" for="fileInput">🗀 Wybierz plik</label>
+                    <img id="img-preview" src="" alt="Podgląd">
+                </div>
+
+                <div class="modal-controls">
+                    <button type="submit" class="save-btn">Zapisz</button>
+                    <button type="button" onclick="closeModal()" class="cancel-btn">Anuluj</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+<div class="container venues">
+    {% for row in venues %}
+    <div class="card" id="card-{{ row.id }}" onclick="window.location.href='/koncerty?miejsce={{ row.id }}'">
+        {% set default_img = url_for('static', filename='images/miejsca/default.png') %}
+        
+        <img src="{{ url_for('static', filename='images/miejsca/' + row.zdjecie) }}"
+             alt="{{ row.nazwa }}" 
+             onerror="this.src = '{{ default_img }}'">
+             
+        <div class="card-content">
+            <h2>{{ row.nazwa }}</h2>
+            <div>
+                <div>
+                    <p>{{ row.miasto }}</p>
+                    <p>{{ row.adres }}</p>
+                </div>
+            </div>
+            {% if session.get('role') == 'admin' %}
+                <div style="margin-top: 10px;">
+                    <div></div>
+                        <div class="controls">
+                            <button class="btn-edit" onclick="event.stopPropagation(); openEditModal('miejsca', '{{ row.id }}')">✎</button>
+                            <button class="btn-delete" onclick="event.stopPropagation(); deleteItem('miejsca', '{{ row.id }}')">✖</button>
+                        </div>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

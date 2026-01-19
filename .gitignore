@@ -1,0 +1,14 @@
+# Python
+__pycache__/
+*.py[cod]
+venv/
+.env
+
+# Media
+static/images/koncerty/*
+static/images/artysci/*
+static/images/miejsca/*
+!static/images/*/default.png
+
+# System
+.DS_Store

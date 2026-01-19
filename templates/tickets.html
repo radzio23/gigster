@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container">
+    <h1 style="margin: 0; text-align: center;">MOJE BILETY</h1>
+
+    {% if tickets %}
+    <table class="report-table" style="margin: 0;">
+        <thead>
+            <tr>
+                <th>ID biletu</th>
+                <th>Koncert</th>
+                <th>Data wydarzenia</th>
+                <th>Cena</th>
+                <th>Data zakupu</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for ticket in tickets %}
+            <tr>
+                <td>#{{ ticket.bilet_id }}</td>
+                <td><strong onclick="openViewModal('{{ ticket.koncert_id }}')" style="cursor: pointer;">{{ ticket.koncert }}</strong></td>
+                <td>{{ ticket.data.strftime('%d.%m.%Y') }}, {{ ticket.czas.strftime('%H:%M') }}</td>
+                <td>{{ ticket.cena }} zł</td>
+                <td>{{ ticket.czas_zlozenia.strftime('%d.%m.%Y, %H:%M') }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <div class="empty-state">
+        <p>Nie kupiłeś jeszcze żadnych biletów.</p>
+        <a href="{{ url_for('concerts') }}" class="btn">Zobacz koncerty</a>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
