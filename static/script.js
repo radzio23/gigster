@@ -1,14 +1,13 @@
-type_dict={ 
-     "koncerty": "koncert", 
-     "artysci": "artystę", 
-     "miejsca": "miejsce",
-     "uzytkownicy": "użytkownika"
+const type_dict = { 
+    "koncerty": "koncert", 
+    "artysci": "artystę", 
+    "miejsca": "miejsce",
+    "uzytkownicy": "użytkownika"
 };
 
-// Zamknięcie modala
+// ZAMYKANIE MODALI
 function closeModal() {
-    const modal = document.getElementById('modal');
-    modal.style.display = 'none';
+    document.getElementById('modal').style.display = 'none';
     const preview = document.getElementById('img-preview');
     if (preview) preview.style.display = 'none';
 }
@@ -19,7 +18,7 @@ function closeView(e) {
     }
 }
 
-// Podgląd obrazka
+// PODGLĄD ZDJĘCIA
 const fileInput = document.getElementById('fileInput');
 if (fileInput) {
     fileInput.addEventListener('change', function(e) {
@@ -27,21 +26,21 @@ if (fileInput) {
         const file = e.target.files[0];
         
         if (file && preview) {
+            if (preview.src.startsWith('blob:')) URL.revokeObjectURL(preview.src);
             preview.src = URL.createObjectURL(file);
             preview.style.display = 'block';
         }
     });
 }
 
-// Okno potwierdzenia
+// MODAL POTWIERDZENIA
 function customConfirm(message) {
     return new Promise((resolve) => {
         const modal = document.getElementById('confirmModal');
-        const messageElement = document.getElementById('confirmMessage');
-        const yesBtn = document.getElementById('confirmYes');
-        messageElement.innerText = message;
+        document.getElementById('confirmMessage').innerText = message;
         modal.style.display = 'flex';
-        yesBtn.onclick = () => {
+
+        document.getElementById('confirmYes').onclick = () => {
             modal.style.display = 'none';
             resolve(true);
         };
@@ -52,12 +51,12 @@ function customConfirm(message) {
     });
 }
 
-// Otwieranie modalu dodawania
+
+// MODUŁ CRUD: OTWIERANIE MODALI DODAWANIA I EDYCJI
 function openAddModal(type) {
     const form = document.getElementById('addForm');
     form.reset();
     document.getElementById('id').value = '';
-
     document.getElementById('img-preview').style.display = 'none';
     
     form.dataset.type = type; 
@@ -73,24 +72,25 @@ async function openEditModal(type, id) {
         const data = await response.json();
         const form = document.getElementById('addForm');
         form.dataset.type = type;
-
         document.getElementById('id').value = data.id;
+        let isoDate;
+        if (data.data) {
+            const [day, month, year] = data.data.split('.');
+            isoDate = `${year}-${month}-${day}`;
+        }
         
-        // koncerty
         if (type === 'koncerty') {
             form.id_artysty.value = data.id_artysty;
             form.id_miejsca.value = data.id_miejsca;
             form.opis.value = data.opis;
-            form.data.value = data.data; 
+            form.data.value = isoDate;
             form.czas.value = data.czas;
             form.cena_biletu.value = data.cena_biletu;
         } 
-        // artysci
         else if (type === 'artysci') {
             form.nazwa.value = data.nazwa;
             form.id_gatunku.value = data.id_gatunku;
         }
-        // miejsca
         else if (type === 'miejsca') {
             form.nazwa.value = data.nazwa;
             form.miasto.value = data.miasto;
@@ -102,8 +102,9 @@ async function openEditModal(type, id) {
             form.rola.value = data.rola;
             if (form.haslo) form.haslo.value = ''; 
         }
+
         const previewImg = document.getElementById('img-preview');
-        if (data.zdjecie) {
+        if (data.zdjecie && previewImg) {
             previewImg.src = `/static/images/${type}/${data.zdjecie}`;
             previewImg.style.display = 'block';
         }
@@ -112,57 +113,46 @@ async function openEditModal(type, id) {
         document.getElementById('modal').style.display = 'flex';
     } catch (error) {
         console.error('Błąd:', error);
-        alert('Nie udało się załadować danych do edycji.');
+        alert('Nie udało się załadować danych.');
     }
 }
 
-// Submit
+// ZAPIS DANYCH (DODAWANIE I EDYCJA)
 const addForm = document.getElementById('addForm');
 if (addForm) {
     addForm.addEventListener('submit', async (e) => {
         e.preventDefault();
-        const form = e.target;
-        const type = form.dataset.type;
+        const type = e.target.dataset.type;
         const id = document.getElementById('id').value;
-        const formData = new FormData(form);
+        const formData = new FormData(e.target);
     
         const url = id ? `/${type}/edytuj` : `/${type}/dodaj`;
         try {
             const response = await fetch(url, { method: 'POST', body: formData });
-            if (response.ok) {
-                location.reload();
-            } else {
-                const errorData = await response.json();
-                alert("Błąd: " + (errorData.message || "Nie udało się zapisać danych"));
+            if (response.ok) location.reload();
+            else {
+                const err = await response.json();
+                alert("Błąd: " + (err.message || "Błąd zapisu"));
             }
-        } catch (error) {
-            console.error("Błąd połączenia:", error);
-        }
+        } catch (error) { console.error("Błąd połączenia:", error); }
     });
 }
 
-// Usuwanie
 async function deleteItem(type, id) {
-    const confirmed = await customConfirm(`Czy na pewno chcesz usunąć ${type_dict[type]}?`);
-    if (confirmed) {
+    if (await customConfirm(`Czy na pewno chcesz usunąć ${type_dict[type]}?`)) {
         try {
             const response = await fetch(`/${type}/usun/${id}`, { method: 'DELETE' });
-            if (response.ok) {
-                location.reload();
-            } else {
-                alert('Błąd podczas usuwania.');
-            }
-        } catch (error) {
-            console.error('Błąd:', error);
-        }
+            if (response.ok) location.reload();
+            else alert('Błąd podczas usuwania.');
+        } catch (error) { console.error('Błąd:', error); }
     }
 }
 
+// MODAL PODGLĄDU KONCERTU
 async function openViewModal(id) {
     try {
         const response = await fetch(`/koncerty/${id}`);
         const data = await response.json();
-
         const role = document.body.dataset.role;
 
         let details = `
@@ -211,45 +201,34 @@ async function openViewModal(id) {
             </div>
             `;
 
-
-
         document.getElementById('viewDetails').innerHTML = details;
         document.getElementById('viewModal').style.display = 'flex';
-    } catch (error) {
-        console.error('Błąd podglądu:', error);
-    }
+    } catch (error) { console.error('Błąd podglądu:', error); }
 }
 
+// MODUŁ ZAKUPU BILETU
 function buyTicket(id) {
     window.location.href = `/zamowienie/${id}`;
 }
 
 function showReport(sectionId) {
-    const contents = document.querySelectorAll('.report-content');
-    contents.forEach(content => content.style.display = 'none');
-    const buttons = document.querySelectorAll('.tab-btn');
-    buttons.forEach(btn => btn.classList.remove('active'));
-
+    document.querySelectorAll('.report-content').forEach(c => c.style.display = 'none');
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
     document.getElementById(sectionId).style.display = 'block';
     event.currentTarget.classList.add('active');
 }
 
 function updateTotal() {
     const qty = document.getElementById('ticketQuantity').value;
-    const price = document.getElementById('unitPrice').innerText;
+    const price = parseFloat(document.getElementById('unitPrice').innerText);
     document.getElementById('totalPrice').innerText = (qty * price).toFixed(2);
 }
 
 async function confirmPurchase() {
-    const form = document.getElementById('purchaseForm');
-    const formconcert = new FormData(form);
-
-    const response = await fetch('/kup-bilet', { method: 'POST', body: formconcert });
+    const formData = new FormData(document.getElementById('purchaseForm'));
+    const response = await fetch('/kup-bilet', { method: 'POST', body: formData });
     const result = await response.json();
 
-    if (result.status === 'success') {
-        window.location.href = '/bilety'; 
-    } else {
-        alert('Błąd: ' + result.message);
-    }
+    if (result.status === 'success') window.location.href = '/bilety'; 
+    else alert('Błąd: ' + result.message);
 }

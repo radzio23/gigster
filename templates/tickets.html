@@ -9,19 +9,19 @@
             <tr>
                 <th>ID biletu</th>
                 <th>Koncert</th>
-                <th>Data wydarzenia</th>
                 <th>Cena</th>
                 <th>Data zakupu</th>
+                <th></th>
             </tr>
         </thead>
         <tbody>
             {% for ticket in tickets %}
             <tr>
-                <td>#{{ ticket.bilet_id }}</td>
+                <td>#{{ ticket.id }}</td>
                 <td><strong onclick="openViewModal('{{ ticket.koncert_id }}')" style="cursor: pointer;">{{ ticket.koncert }}</strong></td>
-                <td>{{ ticket.data.strftime('%d.%m.%Y') }}, {{ ticket.czas.strftime('%H:%M') }}</td>
                 <td>{{ ticket.cena }} zł</td>
                 <td>{{ ticket.czas_zlozenia.strftime('%d.%m.%Y, %H:%M') }}</td>
+                <td style="color: #00afaf; cursor: pointer;">🡻</td>
             </tr>
             {% endfor %}
         </tbody>

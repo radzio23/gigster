@@ -1,0 +1,76 @@
+System zarządzania koncertami - Gigster
+System Gigster to kompleksowa aplikacja webowa służąca do zarządzania bazą koncertów, artystów, miejsc oraz sprzedażą biletów. Projekt łączy nowoczesny frontend z relacyjną bazą danych PostgreSQL.
+
+Technologie
+Backend: Python (Flask)
+Baza Danych: PostgreSQL
+Frontend: HTML, CSS, JavaScript
+Szablony: Jinja2
+
+Instrukcja uruchomienia:
+
+1. Wymagania wstępne:
+ - PostgreSQL (zalecana wersja 18.1 lub nowsza)
+ - Python (zalecana wersja 3.12.9 lub nowsza)
+ - Git
+
+2. Środowisko wirtualne
+W głównym folderze projektu:
+
+python -m venv venv
+.\venv\Scripts\activate
+
+3. Instalacja bibliotek:
+
+pip install -r requirements.txt
+
+4. Konfiguracja bazy danych:
+Upewnij się, że serwer PostgreSQL jest uruchomiony.
+
+createdb -U postgres gigster_db
+psql -U postgres gigster_db -f database.sql
+
+Dane do połączenia z bazą danych PostgreSQL:
+    Host: localhost
+    Port: 5432
+    Nazwa bazy danych: gigster_db
+    Użytkownik: postgres
+    Hasło: postgres
+
+5. Uruchomienie aplikacji:
+W głównym folderze projektu:
+
+python app.py
+
+Aplikacja dostępna będzie pod adresem http://127.0.0.1:5000.
+
+6. Dane do testowania aplikacji:
+Użytkownik:
+    login: user
+    hasło: user123
+Administrator:
+    login: admin
+    hasło: admin123
+
+Struktura projektu
+gigster/
+├── app.py              # Główny plik aplikacji (logika serwera, trasy, API)
+├── database.sql        # Skrypt bazy PostgreSQL (tabele, widoki, triggery)
+├── requirements.txt    # Lista bibliotek
+├── .gitignore          # Pliki pomijane przez Git
+├── static/             # Zasoby statyczne aplikacji
+│   ├── fonts/          # Niestandardowe czcionki interfejsu
+│   ├── images/         # Zdjęcia dynamiczne (plakaty koncertów, artyści)
+│   ├── script.js       # Logika frontendowa
+│   └── style.css       # Arkusze stylów
+├── templates/          # Szablony HTML (Jinja2)
+│   ├── artists.html    # Katalog artystów
+│   ├── base.html       # Szkielet strony
+│   ├── concerts.html   # Widok główny
+│   ├── dashboard.html  # Panel admina
+│   ├── login.html      # Formularz autoryzacji
+│   ├── order.html      # Widok zamówienia
+│   ├── login.html      # Formularz rejestracji
+│   ├── tickets.html    # Zarządzanie i widok biletów
+│   └── venues.html     # Katalog miejsc koncertowych
+└── README.md           # Instrukcja odpalenia

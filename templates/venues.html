@@ -48,7 +48,8 @@
         
         <img src="{{ url_for('static', filename='images/miejsca/' + row.zdjecie) }}"
              alt="{{ row.nazwa }}" 
-             onerror="this.src = '{{ default_img }}'">
+             onerror="this.src = '{{ default_img }}'"
+             loading="lazy">
              
         <div class="card-content">
             <h2>{{ row.nazwa }}</h2>

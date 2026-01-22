@@ -3,25 +3,6 @@
 {% block content %}
 <div class="header">
     <h1>KONCERTY</h1>
-    <form action="/koncerty" method="GET" class="filter">
-        <h3>☰ Filtry</h3>
-        <div>
-            <select name="artysta">
-                <option value="">Artysta...</option>
-                {% for a in artists %}
-                    <option value="{{ a.id }}" {% if request.args.get('artysta') == a.id|string %}selected{% endif %}>{{ a.nazwa }}</option>
-                {% endfor %}
-            </select>
-            <select name="miejsce">
-                <option value="">Miejsce...</option>
-                {% for v in venues %}
-                    <option value="{{ v.id }}" {% if request.args.get('miejsce') == v.id|string %}selected{% endif %}>{{ v.nazwa }}</option>
-                {% endfor %}
-            </select>
-            <button type="submit" class="btn-add">✔</button>
-            <a href="/koncerty" class="cancel-btn">✖</a>
-        </div>
-    </form>
     {% if session.get('role') == 'admin' %}
     <button class="btn-add" onclick="openAddModal('koncerty')">+ Dodaj koncert</button>
 
@@ -80,6 +61,39 @@
     {% endif %}
 </div>
 
+<form action="/koncerty" method="GET" class="filter">
+    <h3>☰ Filtry</h3>
+    <div>
+        <select name="artysta">
+            <option value="">Artysta...</option>
+            {% for a in artists %}
+                <option value="{{ a.id }}" {% if request.args.get('artysta') == a.id|string %}selected{% endif %}>{{ a.nazwa }}</option>
+            {% endfor %}
+        </select>
+        <select name="gatunek">
+            <option value="">Gatunek...</option>
+            {% for g in genres %}
+                <option value="{{ g.id }}" {% if request.args.get('gatunek') == g.id|string %}selected{% endif %}>{{ g.nazwa }}</option>
+            {% endfor %}
+        </select>
+
+        <select name="miasto">
+            <option value="">Miasto...</option>
+            {% for c in cities %}
+                <option value="{{ c.miasto }}" {% if request.args.get('miasto') == c.miasto %}selected{% endif %}>{{ c.miasto }}</option>
+            {% endfor %}
+        </select>
+        <select name="miejsce">
+            <option value="">Miejsce...</option>
+            {% for v in venues %}
+                <option value="{{ v.id }}" {% if request.args.get('miejsce') == v.id|string %}selected{% endif %}>{{ v.nazwa }}</option>
+            {% endfor %}
+        </select>
+        <button type="submit" class="btn-add">✔</button>
+        <a href="/koncerty" class="cancel-btn">✖</a>
+    </div>
+</form>
+
 {% if concerts|length == 0 %}
     <h2 style="margin: 20px;">Brak koncertów do wyświetlenia.</h2>
 {% endif %}
@@ -91,7 +105,8 @@
         
         <img src="{{ url_for('static', filename='images/koncerty/' + row.zdjecie) }}" 
              alt="{{ row.opis }}" 
-             onerror="this.src = '{{ default_img }}'">
+             onerror="this.src = '{{ default_img }}'"
+             loading="lazy">
              
         <div class="card-content">
             <h2>{{ row.opis }} | {{ row.artysta }}</h2>

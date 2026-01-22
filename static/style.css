@@ -217,6 +217,7 @@ a{
     z-index: 1000;
     width: 300px;
     align-items: center;
+    animation: message 5s forwards;
 }
 
 .alert {
@@ -246,6 +247,10 @@ a{
     10% { transform: translateY(0); opacity: 1; }
     90% { transform: translateY(0); opacity: 1; }
     100% { transform: translateY(-100%); opacity: 0; }
+}
+@keyframes message{
+    0% { display: block; }
+    100% { display: none; }
 }
 /* #endregion */
 
@@ -469,7 +474,6 @@ h3{
     padding: 10px 20px;
     font-weight: bold;
     cursor: pointer;
-    border: 1px solid #00afaf;
     transition: background-color 0.3s, color 0.3s;
     font-size: 14px;
     box-shadow: 0 2px 8px rgba(0,0,0,0.1);
@@ -487,6 +491,7 @@ h3{
 }
 
 .cancel-btn {
+    border: 1px solid #00afaf;
     background-color: white;
     color: #00afaf;
     border-radius: 6px;
@@ -711,6 +716,8 @@ h3{
 /* #region filter */
 .filter{
     display: flex;
+    justify-content: space-between;
+    margin: 0 20px 10px;
     background: white;
     border-radius: 5px;
     padding: 5px 15px;
