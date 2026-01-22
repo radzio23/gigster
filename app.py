@@ -12,7 +12,7 @@ app.secret_key = "supersecretkey"
 
 # Uniwersalna funkcja do zapytań SQL
 def query_db(query, params=None, fetch=True):
-    with psycopg.connect(dbname="gigster_db", user="u3firlej", password="3firlej", host="localhost", port="5432", row_factory=psycopg.rows.dict_row) as conn:
+    with psycopg.connect("postgresql://admin:0USEMGkAx2J2NL81c0vsgKo9M6AMnefD@dpg-d5p8hcer433s73d575h0-a/gigster_db", row_factory=psycopg.rows.dict_row) as conn:
         with conn.cursor() as cur:
             cur.execute(query, params or ())    
             if fetch:
