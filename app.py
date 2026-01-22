@@ -10,10 +10,10 @@ app.secret_key = "supersecretkey"
 
 ### FUNKCJE POMOCNICZE ###
 
-DATABASE_URL = os.getenv("DATABASE_URL")
+db_url = os.getenv("DATABASE_URL")
 # Uniwersalna funkcja do zapytań SQL
 def query_db(query, params=None, fetch=True):
-    with psycopg.connect("DATABASE_URL", row_factory=psycopg.rows.dict_row) as conn:
+    with psycopg.connect(db_url, row_factory=psycopg.rows.dict_row) as conn:
         with conn.cursor() as cur:
             cur.execute(query, params or ())    
             if fetch:
